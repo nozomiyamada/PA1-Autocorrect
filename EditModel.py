@@ -34,7 +34,7 @@ class EditModel(object):
       self.vocabulary = corpus.vocabulary()
 
     self.editCounts = {}
-    with open(editFile) as f:
+    with open(editFile, encoding='latin1') as f:
       for line in f:
         rule, countString = line.split("\t")
         self.editCounts[rule] = int(countString)
@@ -46,7 +46,7 @@ class EditModel(object):
 
     word = "<" + word #Append start character
     ret = []
-    for i in xrange(1, len(word)):
+    for i in range(1, len(word)):
       #The corrupted signal are this character and the character preceding
       corruptLetters = word[i-1:i+1] 
       #The correct signal is just the preceding character
@@ -64,15 +64,48 @@ class EditModel(object):
     # Tip: you might find EditModel.ALPHABET helpful
     # Tip: If inserting the letter 'a' as the second character in the word 'test', the corrupt
     #      signal is 't' and the correct signal is 'ta'. See slide 17 of the noisy channel model.
+    """
+    word: str to be editted 
+    return list of editted str
+    
+    insertEdits('chula')
+    >>> [('<achula', '<', '<a'),...('<chuzla', 'u', 'uz'),...]
+    """
     word = "<" + word # append start token
-    return []
+    ret = [] # editted word list
+    for i in range(len(word)):
+        for j in self.ALPHABET: # letter to be inserted 
+            corruptLetters = word[i] # the i-th letter of word
+            correctLetters = word[i]+j # the i-th letter of word + inserted letter
+            correction = word[1:i+1] + j + word[i+1:] # delete first character '<'
+            ret.append(Edit(correction, corruptLetters, correctLetters))
+    return ret
 
   def transposeEdits(self, word):
     """Returns a list of edits of 1-transpose distance words and rules used to generate them."""
     # TODO: write this
     # Tip: If tranposing letters 'te' in the word 'test', the corrupt signal is 'te'
     #      and the correct signal is 'et'. See slide 17 of the noisy channel model.
-    return []
+    """
+    word: str to be editted 
+    return list of editted str
+    transpose word[i] and word[i-1], so the range of i is [2:len(word)]
+     
+    transposeEdits('chula')
+    >>> [('<hcula', 'ch', 'hc'),...('<chual', 'al', 'la')]
+    """
+    word = "<" + word # append start token
+    ret = [] # editted word list
+    for i in range(2, len(word)): # begin from the 3rd letter
+        corruptLetters = word[i-1:i+1] # the i-1 and i-th letters of word
+        correctLetters = corruptLetters[::-1] # reverse
+        # convert str into list in order to substitute
+        # if not convert, TypeError: 'str' object does not support item assignment
+        correction = list(word) 
+        correction[i] = word[i-1] # transpose
+        correction[i-1] = word[i] # transpose
+        ret.append(Edit(''.join(correction[1:]), corruptLetters, correctLetters))
+    return ret
 
   def replaceEdits(self, word):
     """Returns a list of edits of 1-replace distance words and rules used to generate them."""
@@ -80,7 +113,24 @@ class EditModel(object):
     # Tip: you might find EditModel.ALPHABET helpful
     # Tip: If replacing the letter 'e' with 'q' in the word 'test', the corrupt signal is 'e'
     #      and the correct signal is 'q'. See slide 17 of the noisy channel model.
-    return []
+    """
+    word: str to be editted 
+    return list of editted str
+    
+    replaceEdits('chula')
+    >>> [('<ahula', 'c', '<a'),...('<chulz', 'a', 'z')]
+    """
+    word = "<" + word # append start token
+    ret = []
+    for i in range(1, len(word)): # begin from 2nd letter (first letter is <)
+        for j in self.ALPHABET:
+            correction = list(word)
+            corruptLetters = word[i] # the i-th letter of word
+            correctLetters = j
+            if correction[i] != j: # if two letters are identical, not replaced
+                correction[i] = j
+                ret.append(Edit(''.join(correction[1:]), corruptLetters, correctLetters))
+    return ret
 
   def edits(self, word):
     """Returns a list of tuples of 1-edit distance words and rules used to generate them, e.g. ("test", "te|et")"""
@@ -92,7 +142,7 @@ class EditModel(object):
 
   def editProbabilities(self, misspelling):
     """Computes in-vocabulary edits and edit-probabilities for a given misspelling.
-       Returns list of (correction, log(p(mispelling|correction))) pairs."""
+       Returns list of (correction, log(p(misspelling|correction))) pairs."""
 
     wordCounts = collections.defaultdict(int)
     wordTotal  = 0
@@ -103,7 +153,7 @@ class EditModel(object):
         wordCounts[edit.editedWord] += ruleMass
 
     #Normalize by wordTotal to make probabilities
-    return [(word, math.log(float(mass) / wordTotal)) for word, mass in wordCounts.iteritems()]
+    return [(word, math.log(float(mass) / wordTotal)) for word, mass in wordCounts.items()]
 
 # Start: Sanity checking code.
 
@@ -113,8 +163,8 @@ def checkOverlap(edits, gold):
   missing = gold - edits
   extra = edits - gold
   print ("\tOverlap: %s%%" % percentage)
-  print ("\tMissing edits: %s" % map(str, missing))
-  print ("\tExtra edits: %s" % map(str, extra))
+  print ("\tMissing edits: %s" % list(map(str, missing)))
+  print ("\tExtra edits: %s" % list(map(str, extra)))
 
 def main():
   """Sanity checks the edit model on the word 'hi'."""
