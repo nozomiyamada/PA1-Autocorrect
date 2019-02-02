@@ -27,11 +27,11 @@ class LaplaceBigramLanguageModel:
                 unigramCounts[w1] = unigramCounts.get(w1, 0) + 1
                 bigramCounts[(w1, w2)] = bigramCounts.get((w1, w2), 0) + 1  # key is tuple (w1, w2)
 
-            # for the last index
+            # for the last index (count </s> for P(</s>))
             last_token = sentence.data[-1].word
             unigramCounts[last_token] = unigramCounts.get(last_token, 0) + 1
 
-        # save word count and total for add-one in the next test part
+        # save word count and for add-one in the next test part
         self.unigram_count = unigramCounts
         self.bigram_count = bigramCounts
 
@@ -70,7 +70,7 @@ class LaplaceBigramLanguageModel:
             w1 = sentence[i-1]
             w2 = sentence[i]
             cw1 = unigram_count[w1] + V  # c(w1) + V
-            cw1w2 = bigram_count[(w1,w2)] + 1  # c(w1,w2) + 1
+            cw1w2 = bigram_count[(w1, w2)] + 1  # c(w1,w2) + 1
             prob = float(cw1w2 / cw1)  # calculate P(word_i|word_i-1)
             score += math.log(prob)
         return score

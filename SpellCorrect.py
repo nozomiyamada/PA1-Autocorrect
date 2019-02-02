@@ -5,8 +5,10 @@ from HolbrookCorpus import HolbrookCorpus
 from UniformLanguageModel import UniformLanguageModel
 from UnigramLanguageModel import UnigramLanguageModel
 from StupidBackoffLanguageModel import StupidBackoffLanguageModel
+from StupidBackoffTrigramLanguageModel import StupidBackoffTrigramLanguageModel
 from LaplaceUnigramLanguageModel import LaplaceUnigramLanguageModel
 from LaplaceBigramLanguageModel import LaplaceBigramLanguageModel
+from LaplaceTrigramLanguageModel import LaplaceTrigramLanguageModel
 from CustomLanguageModel import CustomLanguageModel
 from EditModel import EditModel
 from SpellingResult import SpellingResult
@@ -103,7 +105,7 @@ def main():
 
   devPath = 'data/holbrook-tagged-dev.dat'
   devCorpus = HolbrookCorpus(devPath)
-  """
+  
   print ('Unigram Language Model: ' )
   unigramLM = UnigramLanguageModel(trainingCorpus)
   unigramSpell = SpellCorrect(unigramLM, trainingCorpus)
@@ -116,7 +118,7 @@ def main():
   uniformOutcome = uniformSpell.evaluate(devCorpus) 
   print (str(uniformOutcome))
 
-  print ('Laplace Unigram Language Model: ' )
+  print ('Laplace Unigram Language Model: ')
   laplaceUnigramLM = LaplaceUnigramLanguageModel(trainingCorpus)
   laplaceUnigramSpell = SpellCorrect(laplaceUnigramLM, trainingCorpus)
   laplaceUnigramOutcome = laplaceUnigramSpell.evaluate(devCorpus)
@@ -127,12 +129,24 @@ def main():
   laplaceBigramSpell = SpellCorrect(laplaceBigramLM, trainingCorpus)
   laplaceBigramOutcome = laplaceBigramSpell.evaluate(devCorpus)
   print (str(laplaceBigramOutcome))
-  """
-  print ('Stupid Backoff Language Model: '  )
+  
+  print ('Laplace Trigram Language Model: ')
+  laplaceTrigramLM = LaplaceTrigramLanguageModel(trainingCorpus)
+  laplaceTrigramSpell = SpellCorrect(laplaceTrigramLM, trainingCorpus)
+  laplaceTrigramOutcome = laplaceTrigramSpell.evaluate(devCorpus)
+  print (str(laplaceTrigramOutcome))
+
+  print ('Stupid Backoff Language Model: ')
   sbLM = StupidBackoffLanguageModel(trainingCorpus)
   sbSpell = SpellCorrect(sbLM, trainingCorpus)
   sbOutcome = sbSpell.evaluate(devCorpus)
   print (str(sbOutcome))
+
+  print('Stupid Backoff Trigram Language Model: ')
+  sbLM = StupidBackoffTrigramLanguageModel(trainingCorpus)
+  sbSpell = SpellCorrect(sbLM, trainingCorpus)
+  sbOutcome = sbSpell.evaluate(devCorpus)
+  print(str(sbOutcome))
 
   print ('Custom Language Model: ')
   customLM = CustomLanguageModel(trainingCorpus)
