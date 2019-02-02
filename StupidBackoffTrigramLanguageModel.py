@@ -67,12 +67,12 @@ class StupidBackoffTrigramLanguageModel:
         elif key (w3) is in unigram
         S(w3|w1,w2) = k^2 * c(w3) / N
         
-        else ... w2 = UNK
-        S(w2|w1) = 1 / N
+        else ... w3 = UNK
+        S(w3|w1,w2) = 1 / N
         """
         # logP(W) = logP(<r>) + logP(<s>|<r>) + logP(w1|<r>,<s>) + logP(w2|<s>,w1) ...
         score = 0.0  # P(<r>) = P(<s>|<r>) = 1
-        k = 0.8  # coefficient for stupid backoff
+        k = 0.4  # coefficient for stupid backoff
         for i in range(2, len(sentence)):  # begin from the third index = logP(w1|<r>,<s>)
             w1 = sentence[i-2]
             w2 = sentence[i-1]

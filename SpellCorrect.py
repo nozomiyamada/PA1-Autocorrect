@@ -105,7 +105,7 @@ def main():
 
   devPath = 'data/holbrook-tagged-dev.dat'
   devCorpus = HolbrookCorpus(devPath)
-  
+  """
   print ('Unigram Language Model: ' )
   unigramLM = UnigramLanguageModel(trainingCorpus)
   unigramSpell = SpellCorrect(unigramLM, trainingCorpus)
@@ -147,7 +147,7 @@ def main():
   sbSpell = SpellCorrect(sbLM, trainingCorpus)
   sbOutcome = sbSpell.evaluate(devCorpus)
   print(str(sbOutcome))
-
+  """
   print ('Custom Language Model: ')
   customLM = CustomLanguageModel(trainingCorpus)
   customSpell = SpellCorrect(customLM, trainingCorpus)

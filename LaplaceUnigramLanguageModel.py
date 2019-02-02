@@ -36,20 +36,16 @@ class LaplaceUnigramLanguageModel:
     unigram_count = self.count.copy()
     total = self.total
 
-    # just make a new key for UNK, add-one later
+    # make a new key for UNK, add-one later
     for token in sentence:
       if token not in unigram_count:
         unigram_count[token] = 0
 
-    # calculate the add-one probability
-    # all values are added one ... float(v) + 1
-    total += len(unigram_count) # token number + V
-    LaplaceUnigramProbs = {k: (float(v) + 1) / total for k, v in unigram_count.items()}
-
-    # calcutate logP(w1) + logP(w2) + ...
-    score = 0.0
-    for token in sentence:
-      prob = LaplaceUnigramProbs[token]
+    # calcutate lopP(<s>) + logP(w1) + logP(w2) + ...
+    score = 0.0  # P(<s>) = 1
+    V = len(unigram_count)  # the number of words including UNK
+    for word in sentence:
+      prob = float((unigram_count[word] + 1) / (total + V))
       score += math.log(prob)
 
     return score
