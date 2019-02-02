@@ -103,7 +103,7 @@ def main():
 
   devPath = 'data/holbrook-tagged-dev.dat'
   devCorpus = HolbrookCorpus(devPath)
-
+  """
   print ('Unigram Language Model: ' )
   unigramLM = UnigramLanguageModel(trainingCorpus)
   unigramSpell = SpellCorrect(unigramLM, trainingCorpus)
@@ -121,7 +121,7 @@ def main():
   laplaceUnigramSpell = SpellCorrect(laplaceUnigramLM, trainingCorpus)
   laplaceUnigramOutcome = laplaceUnigramSpell.evaluate(devCorpus)
   print (str(laplaceUnigramOutcome))
-
+  """
   print ('Laplace Bigram Language Model: ')
   laplaceBigramLM = LaplaceBigramLanguageModel(trainingCorpus)
   laplaceBigramSpell = SpellCorrect(laplaceBigramLM, trainingCorpus)
