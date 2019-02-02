@@ -6,7 +6,6 @@ class CustomLanguageModel:
 
     def __init__(self, corpus):
         self.train(corpus)
-        self.i = 0
 
     def train(self, corpus):
         """ Takes a corpus and trains your language model.
@@ -46,11 +45,18 @@ class CustomLanguageModel:
                 f2 += 1
         d = f1 / (f1 + 2*f2)
 
+        # calculate type(:,w)
+        type_num = {}
+        for bigram in bigramCounts:
+            type_num[bigram[1]] = type_num.get(bigram[1], 0) + 1
+
         # save word count and total for next test part
         self.unigram_count = unigramCounts
         self.bigram_count = bigramCounts
+        self.type_num = type_num
+        self.type_all = len(bigramCounts)
         self.total = total
-        self.d = d
+        self.d = d  # coefficient
 
     def score(self, sentence):
         """ Takes a list of strings as argument and returns the log-probability of the
@@ -58,11 +64,8 @@ class CustomLanguageModel:
         """
         # TODO your code here
 
-        # initialize count with trained data
-        unigram_count = self.unigram_count.copy()
-        bigram_count = self.bigram_count.copy()
         N = self.total
-        d = self.d  # coefficient
+        d = self.d
 
         ### calculate probability ###
         """
@@ -73,26 +76,17 @@ class CustomLanguageModel:
         """
         # logP(W) = logP(<s>) + logP(w1|<s>) + logP(w2|w1) + logP(w3|w2) ...
         score = 0.0  # P(<s>) = 1
-        type_all = len(bigram_count)  # type(:,:)
-
         for i in range(1, len(sentence)):  # begin from the second index = logP(w1|<s>)
             w1 = sentence[i-1]
             w2 = sentence[i]
 
-            if (w1, w2) in bigram_count:  # neither wi nor wi-1 is UNK
-                AD = max(bigram_count[(w1, w2)]-d, 0) / unigram_count[w1]
-                lamb = d / unigram_count[w1]
-                type_wi = 0
-                for bigram in bigram_count:
-                    if bigram[1] == w2:
-                        type_wi += 1
-                Pcon = type_wi / type_all
+            if (w1, w2) in self.bigram_count:  # neither wi nor wi-1 is UNK
+                AD = max(self.bigram_count[(w1, w2)]-d, 0) / self.unigram_count[w1]
+                lamb = d / self.unigram_count[w1]
+                Pcon = self.type_num[w2] / self.type_all
                 prob = AD + lamb * Pcon
             else:
                 prob = 1 / N
             score += math.log(prob)
 
-        if self.i % 1000 == 0:
-            print(self.i)
-        self.i += 1
         return score
