@@ -9,6 +9,7 @@ from StupidBackoffTrigramLanguageModel import StupidBackoffTrigramLanguageModel
 from LaplaceUnigramLanguageModel import LaplaceUnigramLanguageModel
 from LaplaceBigramLanguageModel import LaplaceBigramLanguageModel
 from LaplaceTrigramLanguageModel import LaplaceTrigramLanguageModel
+from LaplaceFourgramLanguageModel import LaplaceFourgramLanguageModel
 from CustomLanguageModel import CustomLanguageModel
 from EditModel import EditModel
 from SpellingResult import SpellingResult
@@ -105,7 +106,7 @@ def main():
 
   devPath = 'data/holbrook-tagged-dev.dat'
   devCorpus = HolbrookCorpus(devPath)
-  """
+
   print ('Unigram Language Model: ' )
   unigramLM = UnigramLanguageModel(trainingCorpus)
   unigramSpell = SpellCorrect(unigramLM, trainingCorpus)
@@ -135,6 +136,12 @@ def main():
   laplaceTrigramSpell = SpellCorrect(laplaceTrigramLM, trainingCorpus)
   laplaceTrigramOutcome = laplaceTrigramSpell.evaluate(devCorpus)
   print (str(laplaceTrigramOutcome))
+  
+  print ('Laplace 4gram Language Model: ')
+  laplaceFourgramLM = LaplaceFourgramLanguageModel(trainingCorpus)
+  laplaceFourgramSpell = SpellCorrect(laplaceFourgramLM, trainingCorpus)
+  laplaceFourgramOutcome = laplaceFourgramSpell.evaluate(devCorpus)
+  print (str(laplaceFourgramOutcome))
 
   print ('Stupid Backoff Language Model: ')
   sbLM = StupidBackoffLanguageModel(trainingCorpus)
@@ -147,7 +154,7 @@ def main():
   sbSpell = SpellCorrect(sbLM, trainingCorpus)
   sbOutcome = sbSpell.evaluate(devCorpus)
   print(str(sbOutcome))
-  """
+
   print ('Custom Language Model: ')
   customLM = CustomLanguageModel(trainingCorpus)
   customSpell = SpellCorrect(customLM, trainingCorpus)
