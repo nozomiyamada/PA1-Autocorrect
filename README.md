@@ -1,15 +1,8 @@
 # PA1-Autocorrect
 
-## Part 2
-
-| |Correct|Accuracy|
-|:-:|--:|--:|
-|Unsmoothed Unigram LM | | |
-|Uniform LM| | |
-
-## Part 3
-
-| |Correct|Accuracy|
-|:-:|--:|--:|
-|Laplace Unigram LM | | |
-|Laplace Bigram LM| | |
+| |correct|total | accuracy|
+|:-:|--:|--:|--:|
+|Unsmoothed Unigram LM |6 |471 |0.012739 |
+|Uniform LM|26 |471 |0.055202 |
+|Laplace Unigram LM |52 | 471| 0.110403 |
+|Laplace Bigram LM|69 | 471| 0.146497 |
