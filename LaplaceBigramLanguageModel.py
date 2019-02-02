@@ -5,7 +5,6 @@ class LaplaceBigramLanguageModel:
     def __init__(self, corpus):
         """Initialize your data structures in the constructor."""
         self.train(corpus)
-        self.i = 1
 
     def train(self, corpus):
         """
@@ -57,7 +56,7 @@ class LaplaceBigramLanguageModel:
                 bigram = (sentence[i-1], sentence[i])
                 if bigram not in bigram_count:
                     bigram_count[bigram] = 0
-        
+
         ### calculate probability ###
         """
         p(w2|w1) = c(w1,w2)+1 / c(w1)+V
@@ -74,6 +73,4 @@ class LaplaceBigramLanguageModel:
             cw1w2 = bigram_count[(w1,w2)] + 1  # c(w1,w2) + 1
             prob = float(cw1w2 / cw1)  # calculate P(word_i|word_i-1)
             score += math.log(prob)
-        print(self.i)
-        self.i += 1
         return score
