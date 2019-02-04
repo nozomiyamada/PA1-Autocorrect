@@ -60,7 +60,7 @@ class StupidBackoffLanguageModel:
         """
         # logP(W) = logP(<s>) + logP(w1|<s>) + logP(w2|w1) + logP(w3|w2) ...
         score = 0.0  # P(<s>) = 1
-        k = 0.8  # coefficient for stupid backoff
+        k = 0.4  # coefficient for stupid backoff
         for i in range(1, len(sentence)):  # begin from the second index = logP(w1|<s>)
             w1 = sentence[i - 1]
             w2 = sentence[i]
@@ -71,7 +71,7 @@ class StupidBackoffLanguageModel:
             elif w2 in unigram_count:
                 S = float(k * unigram_count[w2] / N)
             else:
-                S = 1 / N
+                S = k * 1 / N
 
             score += math.log(S)
 

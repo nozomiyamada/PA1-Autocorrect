@@ -56,6 +56,8 @@ class StupidBackoffTrigramLanguageModel:
         trigram_count = self.trigram_count.copy()
         N = self.total
 
+        sentence = ['<r>'] + sentence + ['</r>']
+
         ### calculate probability ###
         """
         if key (w1,w2,w3) is in trigram
@@ -84,7 +86,7 @@ class StupidBackoffTrigramLanguageModel:
             elif w1 in unigram_count:
                 S = float(k * k * unigram_count[w1] / N)
             else:
-                S = 1 / N
+                S = k * 1 / N
             score += math.log(S)
 
         return score

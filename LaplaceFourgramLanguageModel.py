@@ -56,6 +56,8 @@ class LaplaceFourgramLanguageModel:
         trigram_count = self.trigram_count.copy()
         fourgram_count = self.fourgram_count.copy()
 
+        sentence = ['<q>', '<r>'] + sentence + ['</r>', '</q>']
+
         # make new key for UNK (unigram)
         for token in sentence:
             if token not in unigram_count:

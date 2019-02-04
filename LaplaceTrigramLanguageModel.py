@@ -46,7 +46,7 @@ class LaplaceTrigramLanguageModel:
         unigram_count = self.unigram_count.copy()
         bigram_count = self.bigram_count.copy()
         trigram_count = self.trigram_count.copy()
-
+        sentence = ['<r>'] + sentence + ['</r>']
         # make new key for UNK (unigram)
         for token in sentence:
             if token not in unigram_count:
