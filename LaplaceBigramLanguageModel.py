@@ -46,31 +46,33 @@ class LaplaceBigramLanguageModel:
         unigram_count = self.unigram_count.copy()
         bigram_count = self.bigram_count.copy()
 
+        # total vocab number including UNK for laplace smoothing
+        V = len(unigram_count.keys() | set(sentence))
+
         # make new key for UNK (unigram)
-        for token in sentence:
-            if token not in unigram_count:
-              unigram_count[token] = 0
+        for word in sentence:
+            if word not in unigram_count:
+                unigram_count[word] = 0
 
         # make new key for UNK (bigram)
-            for i in range(1, len(sentence)):
-                bigram = (sentence[i-1], sentence[i])
-                if bigram not in bigram_count:
-                    bigram_count[bigram] = 0
+        for i in range(1, len(sentence)):
+            bigram = (sentence[i-1], sentence[i])
+            if bigram not in bigram_count:
+                bigram_count[bigram] = 0
 
         ### calculate probability ###
         """
-        p(w2|w1) = c(w1,w2)+1 / c(w1)+V
+        p(w2|w1) = c(w1,w2) + 1 / c(w1) + V
         but if we calculate all p(w2|w1) before, it takes a lot of time
         so calculate only p(w2|w1) that is needed after getting sentence
         """
         # logP(W) = logP(<s>) + logP(w1|<s>) + logP(w2|w1) + logP(w3|w2) ...
         score = 0.0  # P(<s>) = 1
-        V = len(unigram_count)  # the number of words including UNK
         for i in range(1, len(sentence)):  # begin from the second index = logP(w1|<s>)
             w1 = sentence[i-1]
             w2 = sentence[i]
             cw1 = unigram_count[w1] + V  # c(w1) + V
             cw1w2 = bigram_count[(w1, w2)] + 1  # c(w1,w2) + 1
-            prob = float(cw1w2 / cw1)  # calculate P(word_i|word_i-1)
+            prob = cw1w2 / cw1  # calculate P(word_i|word_i-1)
             score += math.log(prob)
         return score

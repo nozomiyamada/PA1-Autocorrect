@@ -56,21 +56,25 @@ class StupidBackoffTrigramLanguageModel:
         trigram_count = self.trigram_count.copy()
         N = self.total
 
+        # total vocab number including UNK for laplace smoothing
+        V = len(self.unigram_count.keys() | set(sentence))
+
+        # for trigram
         sentence = ['<r>'] + sentence + ['</r>']
 
         ### calculate probability ###
         """
         if key (w1,w2,w3) is in trigram
-        S(w3|w1,w2) = c(w1,w2,w3) / c(w1,w2) 
+        S(w3|w1,w2) = c(w1,w2,w3) / c(w1,w2) ... normal trigram
         
         elif key (w2,w3) is in bigram
-        S(w3|w1,w2) = k * c(w2,w3) / c(w2)
+        S(w3|w1,w2) = k * c(w2,w3) / c(w2) ... k * normal bigram
         
         elif key (w3) is in unigram
-        S(w3|w1,w2) = k^2 * c(w3) / N
+        S(w3|w1,w2) = k^2 * c(w3) / N ... K^2 * unsmoothed unigram
         
         else ... w3 = UNK
-        S(w3|w1,w2) = 1 / N
+        S(w3|w1,w2) = k^2 * 1 / (N + V) ... k^2 * laplace unigram
         """
         # logP(W) = logP(<r>) + logP(<s>|<r>) + logP(w1|<r>,<s>) + logP(w2|<s>,w1) ...
         score = 0.0  # P(<r>) = P(<s>|<r>) = 1
@@ -80,13 +84,13 @@ class StupidBackoffTrigramLanguageModel:
             w2 = sentence[i-1]
             w3 = sentence[i]
             if (w1, w2, w3) in trigram_count:
-                S = float(trigram_count[(w1, w2, w3)] / bigram_count[(w1, w2)])
+                S = trigram_count[(w1, w2, w3)] / bigram_count[(w1, w2)]  # normal trigram
             elif (w2, w3) in bigram_count:
-                S = float(k * bigram_count[(w2, w3)] / unigram_count[w2])
+                S = k * bigram_count[(w2, w3)] / unigram_count[w2]  # k * normal bigram
             elif w1 in unigram_count:
-                S = float(k * k * unigram_count[w1] / N)
+                S = k * k * unigram_count[w1] / N  # k^2 * unsmoothed unigram
             else:
-                S = k * 1 / N
+                S = k * k * 1 / (N + V)  # k^2 * laplace unigram
             score += math.log(S)
 
         return score

@@ -22,7 +22,6 @@ class LaplaceFourgramLanguageModel:
                 w3 = new_sentence[i+2]
                 w4 = new_sentence[i+3]
                 unigramCounts[w1] = unigramCounts.get(w1, 0) + 1
-                bigramCounts[(w1, w2)] = bigramCounts.get((w1, w2), 0) + 1  # key is tuple (w1, w2)
                 trigramCounts[(w1, w2, w3)] = trigramCounts.get((w1, w2, w3), 0) + 1
                 fourgramCounts[(w1, w2, w3, w4)] = fourgramCounts.get((w1, w2, w3, w4), 0) + 1
 
@@ -33,13 +32,10 @@ class LaplaceFourgramLanguageModel:
             unigramCounts[s] = unigramCounts.get(s, 0) + 1
             unigramCounts[r] = unigramCounts.get(r, 0) + 1
             unigramCounts[q] = unigramCounts.get(q, 0) + 1
-            bigramCounts[(s, r)] = bigramCounts.get((s, r), 0) + 1
-            bigramCounts[(r, q)] = bigramCounts.get((r, q), 0) + 1
             trigramCounts[(s, r, q)] = trigramCounts.get((s, r, q), 0) + 1
 
         # save word count for add-one in the next test part
         self.unigram_count = unigramCounts
-        self.bigram_count = bigramCounts
         self.trigram_count = trigramCounts
         self.fourgram_count = fourgramCounts
 
@@ -52,22 +48,13 @@ class LaplaceFourgramLanguageModel:
 
         # initialize count with trained data
         unigram_count = self.unigram_count.copy()
-        bigram_count = self.bigram_count.copy()
         trigram_count = self.trigram_count.copy()
         fourgram_count = self.fourgram_count.copy()
 
         sentence = ['<q>', '<r>'] + sentence + ['</r>', '</q>']
 
-        # make new key for UNK (unigram)
-        for token in sentence:
-            if token not in unigram_count:
-                unigram_count[token] = 0
-
-        # make new key for UNK (bigram)
-        for i in range(1, len(sentence)):
-            bigram = (sentence[i-1], sentence[i])
-            if bigram not in bigram_count:
-                bigram_count[bigram] = 0
+        # total vocab number including UNK for laplace smoothing
+        V = len(self.unigram_count.keys() | set(sentence))
 
         # make new key for UNK (trigram)
         for i in range(2, len(sentence)):
@@ -87,15 +74,13 @@ class LaplaceFourgramLanguageModel:
         """
         # logP(W) = logP(<q>) + logP(<r>|<q>) + logP(<s>|<q>,<r>) + logP(w1|<q>,<r>,<s>) ...
         score = 0.0  # P(<q>) = P(<r>|<q>) = P(<s>|<q>,<r>) = 1
-        V = len(unigram_count)  # the number of words including UNK
         for i in range(3, len(sentence)):  # begin from the fourth index = P(w1|<q>,<r>,<s>)
             w1 = sentence[i-3]
             w2 = sentence[i-2]
             w3 = sentence[i-1]
             w4 = sentence[i]
-            cw1w2w3 = trigram_count[(w1, w2, w3)] + V  # c(w1,w2,w3) + V
             cw1w2w3w4 = fourgram_count[(w1, w2, w3, w4)] + 1  # c(w1,w2,w3,w4) + 1
+            cw1w2w3 = trigram_count[(w1, w2, w3)] + V  # c(w1,w2,w3) + V
             prob = float(cw1w2w3w4 / cw1w2w3)  # calculate P(w4|w1,w2,w3,w4)
             score += math.log(prob)
-
         return score

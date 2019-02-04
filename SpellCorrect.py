@@ -142,7 +142,7 @@ def main():
   laplaceFourgramSpell = SpellCorrect(laplaceFourgramLM, trainingCorpus)
   laplaceFourgramOutcome = laplaceFourgramSpell.evaluate(devCorpus)
   print (str(laplaceFourgramOutcome))
-
+  
   print ('Stupid Backoff Language Model: ')
   sbLM = StupidBackoffLanguageModel(trainingCorpus)
   sbSpell = SpellCorrect(sbLM, trainingCorpus)

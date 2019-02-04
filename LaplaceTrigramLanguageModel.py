@@ -43,14 +43,12 @@ class LaplaceTrigramLanguageModel:
         # TODO your code here
 
         # initialize count with trained data
-        unigram_count = self.unigram_count.copy()
         bigram_count = self.bigram_count.copy()
         trigram_count = self.trigram_count.copy()
         sentence = ['<r>'] + sentence + ['</r>']
-        # make new key for UNK (unigram)
-        for token in sentence:
-            if token not in unigram_count:
-              unigram_count[token] = 0
+
+        # total vocab number including UNK for laplace smoothing
+        V = len(self.unigram_count.keys() | set(sentence))
 
         # make new key for UNK (bigram)
         for i in range(1, len(sentence)):
@@ -70,13 +68,12 @@ class LaplaceTrigramLanguageModel:
         """
         # logP(W) = logP(<r>) + logP(<s>|<r>) + logP(w1|<r>,<s>) + logP(w2|<s>,w1) ...
         score = 0.0  # P(<r>) = P(<s>|<r>) = 1
-        V = len(unigram_count)  # the number of words including UNK
         for i in range(2, len(sentence)):  # begin from the third index = logP(w1|<r>,<s>)
             w1 = sentence[i-2]
             w2 = sentence[i-1]
             w3 = sentence[i]
-            cw1w2 = bigram_count[(w1, w2)] + V  # c(w1) + V
             cw1w2w3 = trigram_count[(w1, w2, w3)] + 1  # c(w1,w2) + 1
-            prob = float(cw1w2w3 / cw1w2)  # calculate P(w3|w1,w2)
+            cw1w2 = bigram_count[(w1, w2)] + V  # c(w1) + V
+            prob = cw1w2w3 / cw1w2  # calculate P(w3|w1,w2)
             score += math.log(prob)
         return score

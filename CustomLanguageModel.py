@@ -72,26 +72,30 @@ class CustomLanguageModel:
         N = self.total
         d = self.d
 
+        # total vocab number including UNK for laplace smoothing
+        V = len(self.unigram_count.keys() | set(sentence))
 
         ### calculate probability ###
         """
+        if w1, w2 is not UNK
         P(wi|wi-1) = AD + λ(wi-1)Pcontinuation(wi)
         AD = max(c(wi-1,wi)-d,0) / c(wi-1)
         λ(wi-1) = d / c(wi-1) * |{w:c(wi-1,w)}>0|
-        Pcontinuation(wi) = type(*,w) / type(*,*)
+        Pcontinuation(wi) = type(*,wi) / type(*,*)
+        
+        if w1 is UNK or w2 is UNK, use laplace unigram
         """
         # logP(W) = logP(<s>) + logP(w1|<s>) + logP(w2|w1) + logP(w3|w2) ...
         score = 0.0  # P(<s>) = 1
         for i in range(1, len(sentence)):  # begin from the second index = logP(w1|<s>)
             w1 = sentence[i-1]
             w2 = sentence[i]
-
             if w1 in self.unigram_count and w2 in self.unigram_count:
-                AD = max(self.bigram_count.get((w1, w2) ,0) - d, 0) / self.unigram_count[w1]
+                AD = max(self.bigram_count.get((w1, w2), 0) - d, 0) / self.unigram_count[w1]
                 lamb = d / self.unigram_count[w1] * self.type_num1[w1]
                 Pcon = self.type_num2[w2] / self.type_all
                 prob = AD + lamb * Pcon
             else:
-                prob = 1 / N
+                prob = 1 / (N + V)  # laplace unigram when UNK
             score += math.log(prob)
         return score
