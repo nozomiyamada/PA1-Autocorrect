@@ -77,17 +77,17 @@ class CustomLanguageModel:
 
         ### calculate probability ###
         """
-        if w1, w2 is not UNK
+        if wi-1, wi is not UNK
          - AD = max(c(wi-1,wi)-d,0) / c(wi-1)
          - λ(wi-1) = d / c(wi-1) * type(wi-1,*)
          - Pcontinuation(wi) = type(*,wi) / type(*,*)
         P(wi|wi-1) = AD + λ(wi-1)Pcontinuation(wi)
         
-        if w1 = UNK, w2 is not UNK
+        if wi-1 = UNK, wi is not UNK
         assume that λ = d / V(all vocab number)
         P(wi|wi-1) = λ * Pcontinuation(wi)
         
-        if w2 is UNK, use laplace unigram instead
+        if wi is UNK, use laplace unigram instead
         P(wi|wi-1) = 1 / (N + V)
         """
         # logP(W) = logP(<s>) + logP(w1|<s>) + logP(w2|w1) + logP(w3|w2) ...
