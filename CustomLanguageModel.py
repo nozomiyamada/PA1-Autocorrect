@@ -84,7 +84,7 @@ class CustomLanguageModel:
         Pcontinuation(wi) = type(*,wi) / type(*,*)
         
         if w1 = UNK, w2 is not UNK
-        assume that λ = 1 / V(type)
+        assume that λ = d / V(type)
         
         if w2 is UNK, use laplace unigram
         """
