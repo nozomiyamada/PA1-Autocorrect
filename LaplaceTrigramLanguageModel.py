@@ -72,8 +72,8 @@ class LaplaceTrigramLanguageModel:
             w1 = sentence[i-2]
             w2 = sentence[i-1]
             w3 = sentence[i]
-            cw1w2w3 = trigram_count[(w1, w2, w3)] + 1  # c(w1,w2) + 1
-            cw1w2 = bigram_count[(w1, w2)] + V  # c(w1) + V
-            prob = cw1w2w3 / cw1w2  # calculate P(w3|w1,w2)
+            cw1w2w3 = trigram_count[(w1, w2, w3)] + 1  # add-one: c(w1,w2,w3) + 1
+            cw1w2 = bigram_count[(w1, w2)] + V  # c(w1,w2) + V
+            prob = cw1w2w3 / cw1w2  # P(w3|w1,w2) = c(w1,w2,w3)+1 / c(w1,w2)+V
             score += math.log(prob)
         return score

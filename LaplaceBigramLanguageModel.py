@@ -73,6 +73,6 @@ class LaplaceBigramLanguageModel:
             w2 = sentence[i]
             cw1 = unigram_count[w1] + V  # c(w1) + V
             cw1w2 = bigram_count[(w1, w2)] + 1  # c(w1,w2) + 1
-            prob = cw1w2 / cw1  # calculate P(word_i|word_i-1)
+            prob = cw1w2 / cw1  # P(wi|wi-1) = c(wi-1, wi) + 1 / c(wi) + V
             score += math.log(prob)
         return score

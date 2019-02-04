@@ -21,7 +21,7 @@ class StupidBackoffTrigramLanguageModel:
         trigramCounts = {}
         total = 0
         for sentence in corpus.corpus:
-            new_sentence = ['<r>'] + [i.word for i in sentence.data] + ['</r>']
+            new_sentence = ['<r>'] + [i.word for i in sentence.data] + ['</r>']  # start tag for trigram
             for i in range(len(new_sentence) - 2):  # -2 for the last trigram
                 w1 = new_sentence[i]
                 w2 = new_sentence[i + 1]
@@ -59,7 +59,7 @@ class StupidBackoffTrigramLanguageModel:
         # total vocab number including UNK for laplace smoothing
         V = len(self.unigram_count.keys() | set(sentence))
 
-        # for trigram
+        # start tag for trigram
         sentence = ['<r>'] + sentence + ['</r>']
 
         ### calculate probability ###

@@ -34,7 +34,7 @@ class LaplaceUnigramLanguageModel:
 
     # initialize count with trained data
     unigram_count = self.count.copy()
-    total = self.total
+    N = self.total
 
     # make a new key for UNK, add-one later
     for token in sentence:
@@ -43,9 +43,9 @@ class LaplaceUnigramLanguageModel:
 
     # calcutate lopP(<s>) + logP(w1) + logP(w2) + ...
     score = 0.0  # P(<s>) = 1
-    V = len(unigram_count)  # the number of words including UNK
+    V = len(unigram_count)  # the number of vocab including UNK
     for word in sentence:
-      prob = float((unigram_count[word] + 1) / (total + V))
+      prob = float((unigram_count[word] + 1) / (N + V))  # c(w) + 1 / N + V
       score += math.log(prob)
 
     return score

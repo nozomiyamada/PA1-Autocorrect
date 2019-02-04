@@ -33,7 +33,7 @@ class CustomLanguageModel:
             last_token = sentence.data[-1].word
             unigramCounts[last_token] = unigramCounts.get(last_token, 0) + 1
 
-        # calculate d for Kneser-Ney
+        # calculate discount for Kneser-Ney
         # d ~ f1 / (f1 + 2f2)
         f1 = 0
         f2 = 0
@@ -57,11 +57,11 @@ class CustomLanguageModel:
         # save word count and total for next test part
         self.unigram_count = unigramCounts
         self.bigram_count = bigramCounts
-        self.type_num1 = type_num1
-        self.type_num2 = type_num2
-        self.type_all = len(bigramCounts)
-        self.total = total
-        self.d = d  # coefficient
+        self.type_num1 = type_num1  # type(w,*)
+        self.type_num2 = type_num2  # type(*,w)
+        self.type_all = len(bigramCounts)  # type(*,*)
+        self.total = total  # total tokens
+        self.d = d  # coefficient for discount
 
     def score(self, sentence):
         """ Takes a list of strings as argument and returns the log-probability of the
@@ -69,8 +69,8 @@ class CustomLanguageModel:
         """
         # TODO your code here
 
-        N = self.total
-        d = self.d
+        N = self.total  # total tokens
+        d = self.d  # coefficient for discount
 
         # total vocab number including UNK for laplace smoothing
         V = len(self.unigram_count.keys() | set(sentence))
@@ -78,15 +78,17 @@ class CustomLanguageModel:
         ### calculate probability ###
         """
         if w1, w2 is not UNK
+         - AD = max(c(wi-1,wi)-d,0) / c(wi-1)
+         - λ(wi-1) = d / c(wi-1) * type(wi-1,*)
+         - Pcontinuation(wi) = type(*,wi) / type(*,*)
         P(wi|wi-1) = AD + λ(wi-1)Pcontinuation(wi)
-        AD = max(c(wi-1,wi)-d,0) / c(wi-1)
-        λ(wi-1) = d / c(wi-1) * |{w:c(wi-1,w)}>0|
-        Pcontinuation(wi) = type(*,wi) / type(*,*)
         
         if w1 = UNK, w2 is not UNK
-        assume that λ = d / V(type)
+        assume that λ = d / V(all vocab number)
+        P(wi|wi-1) = λ * Pcontinuation(wi)
         
-        if w2 is UNK, use laplace unigram
+        if w2 is UNK, use laplace unigram instead
+        P(wi|wi-1) = 1 / (N + V)
         """
         # logP(W) = logP(<s>) + logP(w1|<s>) + logP(w2|w1) + logP(w3|w2) ...
         score = 0.0  # P(<s>) = 1
@@ -98,7 +100,7 @@ class CustomLanguageModel:
                 lamb = d / self.unigram_count[w1] * self.type_num1[w1]
                 Pcon = self.type_num2[w2] / self.type_all
                 prob = AD + lamb * Pcon
-            elif w2 in self.unigram_count:
+            elif w2 in self.unigram_count:  # w1 = UNK, w2 != UNK
                 lamb = d / V
                 Pcon = self.type_num2[w2] / self.type_all
                 prob = lamb * Pcon
