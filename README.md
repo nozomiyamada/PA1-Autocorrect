@@ -14,4 +14,4 @@
 |Stupid Backoff Trigram LM k=0.4|62 | 471|0.131635 |
 |Stupid Backoff Trigram LM k=0.6|59 | 471|0.125265 |
 |Stupid Backoff Trigram LM k=0.8|58 | 471|0.123142 |
-|Bigram Kneser-Ney LM d=0.77|110 | 471|0.233546 |
+|Bigram Kneser-Ney LM d=0.77|123 | 471|0.261146 |
