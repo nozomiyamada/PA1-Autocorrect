@@ -78,7 +78,7 @@ class StupidBackoffTrigramLanguageModel:
         """
         # logP(W) = logP(<r>) + logP(<s>|<r>) + logP(w1|<r>,<s>) + logP(w2|<s>,w1) ...
         score = 0.0  # P(<r>) = P(<s>|<r>) = 1
-        k = 0.8  # coefficient for stupid backoff
+        k = 0.4  # coefficient for stupid backoff
         for i in range(2, len(sentence)):  # begin from the third index = logP(w1|<r>,<s>)
             w1 = sentence[i-2]
             w2 = sentence[i-1]
