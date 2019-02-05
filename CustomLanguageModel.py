@@ -44,14 +44,11 @@ class CustomLanguageModel:
                 f2 += 1
         d = f1 / (f1 + 2*f2)
 
-        # calculate type(w,*)
+        # calculate type(w,*) & type(*,w)
         type_num1 = {}
-        for bigram in bigramCounts:
-            type_num1[bigram[0]] = type_num1.get(bigram[0], 0) + 1
-
-        # calculate type(*,w)
         type_num2 = {}
         for bigram in bigramCounts:
+            type_num1[bigram[0]] = type_num1.get(bigram[0], 0) + 1
             type_num2[bigram[1]] = type_num2.get(bigram[1], 0) + 1
 
         # save word count and total for next test part
@@ -84,7 +81,7 @@ class CustomLanguageModel:
         P(wi|wi-1) = AD + λ(wi-1)Pcontinuation(wi)
         
         if wi-1 = UNK, wi is not UNK
-        assume that λ = d / V(all vocab number)
+        assume that λ = 1 / V(all vocab number)
         P(wi|wi-1) = λ * Pcontinuation(wi)
         
         if wi is UNK, use laplace unigram instead
@@ -101,7 +98,7 @@ class CustomLanguageModel:
                 Pcon = self.type_num2[w2] / self.type_all
                 prob = AD + lamb * Pcon
             elif w2 in self.unigram_count:  # w1 = UNK, w2 != UNK
-                lamb = d / V
+                lamb = 1 / V
                 Pcon = self.type_num2[w2] / self.type_all
                 prob = lamb * Pcon
             else:

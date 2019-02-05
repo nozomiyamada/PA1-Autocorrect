@@ -11,6 +11,7 @@ from LaplaceBigramLanguageModel import LaplaceBigramLanguageModel
 from LaplaceTrigramLanguageModel import LaplaceTrigramLanguageModel
 from LaplaceFourgramLanguageModel import LaplaceFourgramLanguageModel
 from CustomLanguageModel import CustomLanguageModel
+from CustomLanguageModel2 import CustomLanguageModel2
 from EditModel import EditModel
 from SpellingResult import SpellingResult
 import types
@@ -106,7 +107,7 @@ def main():
 
   devPath = 'data/holbrook-tagged-dev.dat'
   devCorpus = HolbrookCorpus(devPath)
-
+  
   print ('Unigram Language Model: ' )
   unigramLM = UnigramLanguageModel(trainingCorpus)
   unigramSpell = SpellCorrect(unigramLM, trainingCorpus)
@@ -160,6 +161,12 @@ def main():
   customSpell = SpellCorrect(customLM, trainingCorpus)
   customOutcome = customSpell.evaluate(devCorpus)
   print (str(customOutcome))
+
+  print('Custom Language Model 2: ')
+  customLM = CustomLanguageModel2(trainingCorpus)
+  customSpell = SpellCorrect(customLM, trainingCorpus)
+  customOutcome = customSpell.evaluate(devCorpus)
+  print(str(customOutcome))
 
 if __name__ == "__main__":
     main()
