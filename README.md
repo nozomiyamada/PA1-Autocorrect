@@ -19,3 +19,5 @@
 |Bigram Kneser-Ney LM d=0.60|120 | 471|0.254777 |
 |Bigram Kneser-Ney LM d=0.90|119 | 471|0.252654 |
 |Trigram Kneser-Ney LM d=0.77|122 | 471|0.259023 |
+|Trigram Kneser-Ney LM d=0.50|116 | 471|0.246285 |
+
