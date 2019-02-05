@@ -1,5 +1,11 @@
 # PA1-Autocorrect
 
+training data
+* sentence: 660
+* word type: 1661
+* bigram type: 6850
+* tokens: 11250
+
 | |correct|total | accuracy|
 |:-:|--:|--:|--:|
 |Unsmoothed Unigram LM |6 |471 |0.012739 |
