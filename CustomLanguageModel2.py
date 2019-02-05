@@ -1,7 +1,7 @@
 import math
 class CustomLanguageModel2:
     """
-    Kneser-Ney smoothing
+    Trigram Kneser-Ney
     """
 
     def __init__(self, corpus):
@@ -87,6 +87,7 @@ class CustomLanguageModel2:
 
         N = self.total  # total tokens
         d = self.d  # coefficient for discount
+        d = 0.94  # alternative tuned parameter
 
         # start tag for trigram
         sentence = ['<r>'] + sentence + ['</r>']
@@ -96,18 +97,24 @@ class CustomLanguageModel2:
 
         ### calculate probability ###
         """
-        if wi-1, wi is not UNK
-         - AD = max(c(wi-1,wi)-d,0) / c(wi-1)
-         - λ(wi-1) = d / c(wi-1) * type(wi-1,*)
-         - Pcontinuation(wi) = type(*,wi) / type(*,*)
-        P(wi|wi-1) = AD + λ(wi-1)Pcontinuation(wi)
+        calculate P(w3|w1,w2)
         
-        if wi-1 = UNK, wi is not UNK
-        assume that λ = d / V(all vocab number)
-        P(wi|wi-1) = λ * Pcontinuation(wi)
+        if w3 is UNK, use laplace unigram instead
+        P(w3|w1,w2) = 1 / (N + V)
         
-        if wi is UNK, use laplace unigram instead
-        P(wi|wi-1) = 1 / (N + V)
+        if w3 is not UNK, and w2 is UNK
+        P(w3|w1,w2) = 1 / V * Pcontinuation(w3)
+        
+        if w3, w2 are not UNK, and there is not bigram (w1, w2)
+         - AD = max(c(w2,w3)-d,0) / c(w2)
+         - λ(w2) = d / c(w2) * type(w2,*)
+         - Pcontinuation(w3) = type(*,w3) / type(*,*)
+        P(w3|w1,w2) = AD + λ(w2)Pcontinuation(w3) = p2
+        
+        if there is bigram (w1, w2)
+         - AD = max(c(w1,w2,w3)-d,0) / c(w1,w2)
+         - λ(w1,w2) = d / c(w1,w2) * type(w1,w2,*)
+        P(w3|w1,w2) = AD + λ(w1,w2) * p2
         """
         # logP(W) = logP(<r>) + logP(<s>|<r>) + logP(w1|<r>,<s>) + logP(w2|<s>,w1) ...
         score = 0.0  # P(<r>) = P(<s>|<r>) = 1

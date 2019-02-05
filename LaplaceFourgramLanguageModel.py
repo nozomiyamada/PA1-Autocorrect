@@ -80,6 +80,6 @@ class LaplaceFourgramLanguageModel:
             w4 = sentence[i]
             cw1w2w3w4 = fourgram_count[(w1, w2, w3, w4)] + 1  # add-one: c(w1,w2,w3,w4) + 1
             cw1w2w3 = trigram_count[(w1, w2, w3)] + V  # c(w1,w2,w3) + V
-            prob = float(cw1w2w3w4 / cw1w2w3)  # P(w4|w1,w2,w3,w4)
+            prob = cw1w2w3w4 / cw1w2w3  # P(w4|w1,w2,w3,w4)
             score += math.log(prob)
         return score
