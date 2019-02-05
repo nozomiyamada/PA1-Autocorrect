@@ -70,7 +70,7 @@ class StupidBackoffLanguageModel:
                 cw1w2 = bigram_count[(w1, w2)]
                 S = cw1w2 / cw1  # normal bigram P(wi|wi-1)
             elif w2 in unigram_count:
-                S = k * (unigram_count[w2] / N)  # k * unsmoothed unigram
+                S = k * (unigram_count[w2] + 1) / (N + V)  # k * laplace unigram
             else:
                 S = k * 1 / (N + V)  # k * laplace unigram
             score += math.log(S)

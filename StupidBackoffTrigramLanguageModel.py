@@ -71,14 +71,14 @@ class StupidBackoffTrigramLanguageModel:
         S(w3|w1,w2) = k * c(w2,w3) / c(w2) ... k * normal bigram
         
         elif key (w3) is in unigram
-        S(w3|w1,w2) = k^2 * c(w3) / N ... K^2 * unsmoothed unigram
+        S(w3|w1,w2) = k * c(w3) / (N + V) ... k * laplace unigram (if k^2 lower score)
         
         else ... w3 = UNK
-        S(w3|w1,w2) = k^2 * 1 / (N + V) ... k^2 * laplace unigram
+        S(w3|w1,w2) = k * 1 / (N + V) ... k * laplace unigram
         """
         # logP(W) = logP(<r>) + logP(<s>|<r>) + logP(w1|<r>,<s>) + logP(w2|<s>,w1) ...
         score = 0.0  # P(<r>) = P(<s>|<r>) = 1
-        k = 0.4  # coefficient for stupid backoff
+        k = 0.8  # coefficient for stupid backoff
         for i in range(2, len(sentence)):  # begin from the third index = logP(w1|<r>,<s>)
             w1 = sentence[i-2]
             w2 = sentence[i-1]
@@ -87,10 +87,10 @@ class StupidBackoffTrigramLanguageModel:
                 S = trigram_count[(w1, w2, w3)] / bigram_count[(w1, w2)]  # normal trigram
             elif (w2, w3) in bigram_count:
                 S = k * bigram_count[(w2, w3)] / unigram_count[w2]  # k * normal bigram
-            elif w1 in unigram_count:
-                S = k * k * unigram_count[w1] / N  # k^2 * unsmoothed unigram
+            elif w3 in unigram_count:
+                S = k * (unigram_count[w3]+1) / (N + V)  # k * Laplace unigram
             else:
-                S = k * k * 1 / (N + V)  # k^2 * laplace unigram
+                S = k * 1 / (N + V)  # k * Laplace unigram
             score += math.log(S)
 
         return score
